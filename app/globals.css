@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -8,7 +9,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: 'Inter', sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
@@ -22,5 +23,50 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Custom thin scrollbar - consistent across the site */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(99,102,241,0.45); /* indigo-500 translucent */
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.custom-scrollbar {
+  scrollbar-color: rgba(99,102,241,0.45) transparent;
+  scrollbar-width: thin;
+}
+
+/* Styled dropdown for status menus */
+.status-dropdown {
+  background: #111827; /* gray-900 */
+  color: #f9fafb; /* gray-50 */
+  border-radius: 0.5rem;
+  box-shadow: 0 6px 20px rgba(15,23,42,0.6);
+  min-width: 180px;
+  padding: 0.25rem;
+}
+.status-dropdown button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-radius: 0.375rem;
+  color: inherit;
+}
+.status-dropdown button:hover {
+  background: rgba(99,102,241,0.08);
+}
+.status-dropdown .label {
+  font-size: 0.9rem;
 }
