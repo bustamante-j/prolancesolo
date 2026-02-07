@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { financeService } from '@/services/financeService';
 import { clientService } from '@/services/clientService';
 import { taskService } from '@/services/taskService';
@@ -11,6 +11,9 @@ import TransactionCard from '@/components/Finance/TransactionCard';
 import { auth } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import Select from '@/components/ui/Select';
+import Input from '@/components/ui/Input';
+import Textarea from '@/components/ui/Textarea';
+import Button from '@/components/ui/Button';
 
 export default function FinancePage() {
   const router = useRouter();
@@ -22,13 +25,15 @@ export default function FinancePage() {
     date: new Date().toISOString().slice(0,10),
     amount: 0,
     type: 'expense' as 'expense' | 'income',
-    category: '',
     clientId: '',
     taskId: '',
     description: '',
   });
   const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [search, setSearch] = useState('');
+  const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
 
   useEffect(() => {
     if (!auth.isAuthenticated()) {
@@ -67,7 +72,19 @@ export default function FinancePage() {
       alert('File too large. Max 5MB');
       return;
     }
+    if (previewUrl) {
+      try { URL.revokeObjectURL(previewUrl); } catch {};
+    }
     setFile(f);
+    setPreviewUrl(URL.createObjectURL(f));
+  };
+
+  const removeFile = () => {
+    if (previewUrl) {
+      try { URL.revokeObjectURL(previewUrl); } catch {}
+    }
+    setPreviewUrl(null);
+    setFile(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,7 +93,6 @@ export default function FinancePage() {
       date: new Date(form.date),
       amount: Number(form.amount),
       type: form.type,
-      category: form.category || undefined,
       clientId: form.clientId || undefined,
       taskId: form.taskId || undefined,
       description: form.description || undefined,
@@ -86,24 +102,24 @@ export default function FinancePage() {
     } as any;
 
     const id = await financeService.createTransaction(txToCreate);
-    if (!id) { alert('Error creating transaction'); return; }
+    if (!id) { alert('Error creating transaction — make sure you are logged in and Firestore is reachable'); return; }
 
     if (file) {
       setUploadProgress(0);
       try {
         const path = await financeService.uploadReceipt(id, file, (pct) => setUploadProgress(pct));
         await financeService.updateTransaction(id, { receiptPath: path });
-      } catch (err) {
-        console.error(err);
-        alert('Receipt upload failed');
+      } catch (err: any) {
+        console.error('Receipt upload error', err);
+        alert('Receipt upload failed: ' + (err?.message || JSON.stringify(err)));
       } finally {
         setUploadProgress(0);
-        setFile(null);
+        removeFile();
       }
     }
 
     // Reset form and refresh list
-    setForm({ date: new Date().toISOString().slice(0,10), amount: 0, type: 'expense', category: '', clientId: '', taskId: '', description: '' });
+    setForm({ date: new Date().toISOString().slice(0,10), amount: 0, type: 'expense', clientId: '', taskId: '', description: '' });
     await refresh();
   };
 
@@ -120,26 +136,40 @@ export default function FinancePage() {
 
   return (
     <div className="min-h-screen max-w-6xl mx-auto p-6">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">Finance</h1>
-        <div className="space-x-4 text-right">
-          <div className="text-sm text-gray-500">Income <span className="font-semibold">₱ {incomeTotal.toLocaleString()}</span></div>
-          <div className="text-sm text-gray-500">Expenses <span className="font-semibold">₱ {expenseTotal.toLocaleString()}</span></div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6" style={{marginTop: '-0.5rem'}}>
+        <div className="lg:col-span-2">
+        </div>
+        <div className="flex items-center justify-end space-x-4">
+          <div className="px-4 py-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+            <div className="text-xs text-gray-500">Income</div>
+            <div className="text-lg font-semibold">₱ {incomeTotal.toLocaleString()}</div>
+          </div>
+          <div className="px-4 py-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+            <div className="text-xs text-gray-500">Expenses</div>
+            <div className="text-lg font-semibold">₱ {expenseTotal.toLocaleString()}</div>
+          </div>
+          <div className="px-4 py-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+            <div className="text-xs text-gray-500">Balance</div>
+            <div className="text-lg font-semibold">₱ {(incomeTotal - expenseTotal).toLocaleString()}</div>
+          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1 bg-white dark:bg-gray-800 rounded-xl p-6 border">
-          <h2 className="text-lg font-semibold mb-4">New Transaction</h2>
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div>
-              <label className="text-sm text-gray-600">Date</label>
-              <input type="date" value={form.date} onChange={(e) => setForm({...form, date: e.target.value})} className="w-full px-3 py-2 rounded-lg mt-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+        <div className="lg:col-span-1 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold mb-3">New Transaction</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm text-gray-600">Date</label>
+                <Input type="date" value={form.date} onChange={(e) => setForm({...form, date: e.target.value})} className="mt-1" />
+              </div>
+              <div>
+                <label className="text-sm text-gray-600">Amount</label>
+                <Input type="number" value={form.amount} onChange={(e) => setForm({...form, amount: Number(e.target.value)})} className="mt-1" />
+              </div>
             </div>
-            <div>
-              <label className="text-sm text-gray-600">Amount</label>
-              <input type="number" value={form.amount} onChange={(e) => setForm({...form, amount: Number(e.target.value)})} className="w-full px-3 py-2 rounded-lg mt-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
-            </div>
+
             <div>
               <label className="text-sm text-gray-600">Type</label>
               <Select value={form.type} onChange={(e) => setForm({...form, type: e.target.value as any})} className="mt-1">
@@ -147,10 +177,7 @@ export default function FinancePage() {
                 <option value="income">Income</option>
               </Select>
             </div>
-            <div>
-              <label className="text-sm text-gray-600">Category</label>
-              <input value={form.category} onChange={(e) => setForm({...form, category: e.target.value})} className="w-full px-3 py-2 rounded-lg mt-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
-            </div>
+
             <div>
               <label className="text-sm text-gray-600">Client</label>
               <Select value={form.clientId} onChange={(e) => setForm({...form, clientId: e.target.value})} className="mt-1">
@@ -158,6 +185,7 @@ export default function FinancePage() {
                 {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </Select>
             </div>
+
             <div>
               <label className="text-sm text-gray-600">Task</label>
               <Select value={form.taskId} onChange={(e) => setForm({...form, taskId: e.target.value})} className="mt-1">
@@ -165,35 +193,67 @@ export default function FinancePage() {
                 {tasks.map(t => <option key={t.id} value={t.id}>{t.title}</option>)}
               </Select>
             </div>
+
             <div>
               <label className="text-sm text-gray-600">Description</label>
-              <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className="w-full px-3 py-2 rounded-lg mt-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+              <Textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} className="mt-1" />
             </div>
+
             <div>
               <label className="text-sm text-gray-600">Receipt (image only, max 5MB)</label>
-              <input type="file" accept="image/*" onChange={handleFileChange} className="w-full mt-2 text-sm text-gray-600 dark:text-gray-300" />
-              {uploadProgress > 0 && (
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded mt-2 h-3 overflow-hidden">
-                  <div className="bg-indigo-600 h-3 rounded" style={{ width: `${uploadProgress}%` }} />
-                </div>
-              )}
+              <div className="mt-2 flex items-center space-x-3">
+                <label className="inline-flex items-center px-3 py-2 bg-indigo-600 text-white rounded-md cursor-pointer hover:bg-indigo-700">
+                  Upload
+                  <input type="file" accept="image/*" onChange={handleFileChange} className="sr-only" />
+                </label>
+                {previewUrl ? (
+                  <div className="flex items-center space-x-2">
+                    <img src={previewUrl} alt="preview" className="w-20 h-14 object-cover rounded border" />
+                    <div className="flex flex-col">
+                      <button type="button" onClick={removeFile} className="text-sm text-red-600 hover:underline">Remove</button>
+                      {uploadProgress > 0 && (
+                        <div className="w-40 bg-gray-200 dark:bg-gray-700 rounded mt-2 h-2 overflow-hidden">
+                          <div className="bg-indigo-600 h-2" style={{ width: `${uploadProgress}%` }} />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-sm text-gray-500">No file selected</div>
+                )}
+              </div>
             </div>
+
             <div>
-              <button type="submit" className="w-full bg-indigo-600 text-white rounded-lg px-4 py-2 hover:bg-indigo-700 transition">Add Transaction</button>
+              <Button type="submit" className="w-full">Add Transaction</Button>
             </div>
           </form>
         </div>
 
-        <div className="lg:col-span-2 space-y-4">
-          <h2 className="text-lg font-semibold">Transactions</h2>
-          {loading ? <div>Loading...</div> : (
-            <div className="space-y-4">
-              {transactions.map(tx => (
-                <TransactionCard key={tx.id} transaction={tx} onDelete={handleDeleteTx} onUpdate={async (id, updates) => { await financeService.updateTransaction(id, updates); await refresh(); }} />
-              ))}
-              {transactions.length === 0 && <div className="text-gray-500">No transactions yet.</div>}
+        <div className="lg:col-span-2">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">Transactions</h2>
+            <div className="flex items-center space-x-2">
+              <Input placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} className="w-48" />
+              <Select value={filterType} onChange={(e) => setFilterType(e.target.value as any)}>
+                <option value="all">All</option>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+              </Select>
+              <Button variant="ghost" onClick={refresh}>Refresh</Button>
             </div>
-          )}
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
+            {loading ? <div>Loading...</div> : (
+              <div className="space-y-3">
+                {transactions.length === 0 && <div className="text-gray-500">No transactions yet.</div>}
+                {transactions.map(tx => (
+                  <TransactionCard key={tx.id} transaction={tx} onDelete={handleDeleteTx} onUpdate={async (id, updates) => { await financeService.updateTransaction(id, updates); await refresh(); }} />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

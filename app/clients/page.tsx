@@ -7,6 +7,10 @@ import { auth } from '@/lib/auth';
 import { Client } from '@/types/client';
 import ClientCard from '@/components/ClientCard';
 import { Plus, Edit, Save, X } from 'lucide-react';
+import Input from '@/components/ui/Input';
+import Textarea from '@/components/ui/Textarea';
+import Button from '@/components/ui/Button';
+import Select from '@/components/ui/Select';
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -88,131 +92,111 @@ export default function ClientsPage() {
   if (!auth.isAuthenticated()) return null;
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto px-0 py-3">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Clients</h1>
-        <button
-          onClick={handleAdd}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors inline-flex items-center space-x-2"
-        >
-          <Plus className="w-5 h-5" />
-          <span>Add Client</span>
-        </button>
-      </div>
+    <div className="min-h-screen w-full bg-white dark:bg-gray-950 px-6 md:px-8 py-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-6 mb-8">
+          <Button onClick={handleAdd} className="md:w-auto">
+            <Plus className="w-5 h-5" />
+            Add Client
+          </Button>
+        </div>
 
-      {showAddForm && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-              {editingClient ? 'Edit Client' : 'Add Client'}
-            </h2>
-            <button
-              onClick={handleCancel}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Name *
-              </label>
-              <input
-                type="text"
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-gray-100"
-                required
-              />
+        {showAddForm && (
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {editingClient ? 'Edit Client' : 'Add New Client'}
+              </h2>
+              <button
+                onClick={handleCancel}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
+              >
+                <X className="w-6 h-6" />
+              </button>
             </div>
 
-            <div>
-              <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Notes
-              </label>
-              <textarea
-                id="notes"
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-gray-100"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="importance" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Importance (1-5)
+                <label htmlFor="name" className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                  Client Name *
                 </label>
-                <input
-                  type="number"
-                  id="importance"
-                  min="1"
-                  max="5"
-                  value={formData.importance}
-                  onChange={(e) => setFormData({ ...formData, importance: parseInt(e.target.value) || 3 })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-gray-100"
+                <Input
+                  type="text"
+                  id="name"
+                  placeholder="Enter client name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
                 />
               </div>
 
               <div>
-                <label htmlFor="paymentBehavior" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Payment Behavior
+                <label htmlFor="notes" className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                  Notes
                 </label>
-                <select
-                  id="paymentBehavior"
-                  value={formData.paymentBehavior}
-                  onChange={(e) => setFormData({ ...formData, paymentBehavior: e.target.value as any })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-gray-100"
-                >
-                  <option value="excellent">Excellent</option>
-                  <option value="good">Good</option>
-                  <option value="average">Average</option>
-                  <option value="poor">Poor</option>
-                </select>
+                <Textarea
+                  id="notes"
+                  placeholder="Add notes about this client..."
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  rows={3}
+                />
               </div>
-            </div>
 
-            <div className="flex space-x-4">
-              <button
-                type="submit"
-                className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors inline-flex items-center space-x-2"
-              >
-                <Save className="w-5 h-5" />
-                <span>{editingClient ? 'Update' : 'Create'} Client</span>
-              </button>
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="importance" className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                    Importance Level (1-5)
+                  </label>
+                  <Input
+                    type="number"
+                    id="importance"
+                    min="1"
+                    max="5"
+                    value={formData.importance}
+                    onChange={(e) => setFormData({ ...formData, importance: parseInt(e.target.value) || 3 })}
+                  />
+                </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {clients.map((client) => (
-          <ClientCard
-            key={client.id}
-            client={client}
-            onEdit={handleEdit}
-          />
-        ))}
-        {clients.length === 0 && (
-          <div className="col-span-full text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400 mb-4">No clients yet</p>
-            <button
-              onClick={handleAdd}
-              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium"
-            >
-              Add your first client →
-            </button>
+                <div>
+                  <label htmlFor="paymentBehavior" className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                    Payment Behavior
+                  </label>
+                  <Select id="paymentBehavior" value={formData.paymentBehavior} onChange={(e) => setFormData({ ...formData, paymentBehavior: e.target.value as any })}>
+                    <option value="excellent">Excellent</option>
+                    <option value="good">Good</option>
+                    <option value="average">Average</option>
+                    <option value="poor">Poor</option>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <Button type="submit" className="inline-flex items-center gap-2">
+                  <Save className="w-5 h-5" />
+                  {editingClient ? 'Update' : 'Create'} Client
+                </Button>
+                <Button variant="ghost" type="button" onClick={handleCancel}>Cancel</Button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {clients.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {clients.map((client) => (
+              <ClientCard
+                key={client.id}
+                client={client}
+                onEdit={handleEdit}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No clients yet</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4">Start by adding your first client</p>
+            <Button onClick={handleAdd}>Add Client</Button>
           </div>
         )}
       </div>

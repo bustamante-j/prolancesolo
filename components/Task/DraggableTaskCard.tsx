@@ -262,11 +262,20 @@ export default function DraggableTaskCard({
                     </button>
                   )}
 
-                  {task.paid && (
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                      Paid
-                    </span>
-                  )}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onUpdate?.(task.id, { paid: !task.paid });
+                    }}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${
+                      task.paid
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 hover:bg-green-200 dark:hover:bg-green-800'
+                        : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                    title="Click to toggle paid/unpaid"
+                  >
+                    {task.paid ? 'Paid' : 'Unpaid'}
+                  </button>
                 </div>
               </div>
             </div>

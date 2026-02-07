@@ -10,6 +10,9 @@ import { Client } from '@/types/client';
 import { format } from 'date-fns';
 import { Save, X } from 'lucide-react';
 import Select from '@/components/ui/Select';
+import Input from '@/components/ui/Input';
+import Textarea from '@/components/ui/Textarea';
+import Button from '@/components/ui/Button';
 
 export default function AddTaskPage() {
   const [title, setTitle] = useState('');
@@ -73,166 +76,161 @@ export default function AddTaskPage() {
   if (!auth.isAuthenticated()) return null;
 
   return (
-    <div className=" min-h-screen max-w-7xl mx-auto px-0 py-3">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Add Task</h1>
-        <button
-          onClick={() => setShowTemplates(!showTemplates)}
-          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium"
-        >
-          Use Template
-        </button>
-      </div>
+    <div className="min-h-screen w-full bg-white dark:bg-gray-950 px-6 md:px-8 py-6">
+      <div className="max-w-3xl mx-auto">
+        <div className="mb-8">
+          <button
+            onClick={() => setShowTemplates(!showTemplates)}
+            className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-semibold text-sm"
+          >
+            📋 Use Template
+          </button>
+        </div>
 
-      {showTemplates && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Task Templates</h2>
-            <button
-              onClick={() => setShowTemplates(false)}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-          <div className="space-y-3">
-            {templates.map((template) => (
+        {showTemplates && (
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-300 dark:border-gray-700 p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Task Templates</h2>
               <button
-                key={template.id}
-                onClick={() => applyTemplate(template)}
-                className="w-full text-left p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                onClick={() => setShowTemplates(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
               >
-                <h3 className="font-medium text-gray-900 dark:text-gray-100">{template.name}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{template.title}</p>
+                <X className="w-5 h-5" />
               </button>
-            ))}
-            {templates.length === 0 && (
-              <p className="text-gray-500 dark:text-gray-400 text-center py-4">
-                No templates available. Templates will be saved here when you create them later.
-              </p>
-            )}
-          </div>
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 space-y-6">
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Title *
-          </label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-gray-100"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Description
-          </label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-gray-100"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label htmlFor="clientId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Client
-            </label>
-            <Select id="clientId" value={clientId} onChange={(e) => setClientId(e.target.value)}>
-              <option value="">Select Client</option>
-              {clients.map((client) => (
-                <option key={client.id} value={client.id}>
-                  {client.name}
-                </option>
+            </div>
+            <div className="space-y-3">
+              {templates.map((template) => (
+                <button
+                  key={template.id}
+                  onClick={() => applyTemplate(template)}
+                  className="w-full text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <h3 className="font-semibold text-gray-900 dark:text-white">{template.name}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{template.title}</p>
+                </button>
               ))}
-            </Select>
+              {templates.length === 0 && (
+                <p className="text-gray-500 dark:text-gray-400 text-center py-6">
+                  No templates yet. Save tasks as templates for faster creation.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-300 dark:border-gray-700 p-8">
+            <div className="space-y-6">
+              <div>
+                <label htmlFor="title" className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                  Task Title *
+                </label>
+                <Input
+                  type="text"
+                  id="title"
+                  placeholder="e.g., Website redesign"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="description" className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                  Description
+                </label>
+                <Textarea
+                  id="description"
+                  placeholder="Add details about this task..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={3}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="clientId" className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                    Client
+                  </label>
+                  <Select id="clientId" value={clientId} onChange={(e) => setClientId(e.target.value)}>
+                    <option value="">Select a client</option>
+                    {clients.map((client) => (
+                      <option key={client.id} value={client.id}>
+                        {client.name}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+
+                <div>
+                  <label htmlFor="price" className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                    Price (₱)
+                  </label>
+                  <Input
+                    type="number"
+                    id="price"
+                    placeholder="0.00"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    step="0.01"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="deadline" className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                    Deadline *
+                  </label>
+                  <Input
+                    type="date"
+                    id="deadline"
+                    value={deadline}
+                    onChange={(e) => setDeadline(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="estimatedHours" className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                    Estimated Hours
+                  </label>
+                  <Input
+                    type="number"
+                    id="estimatedHours"
+                    placeholder="0"
+                    value={estimatedHours}
+                    onChange={(e) => setEstimatedHours(e.target.value)}
+                    step="0.5"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="notes" className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                  Notes
+                </label>
+                <Textarea
+                  id="notes"
+                  placeholder="Add any additional notes..."
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={3}
+                />
+              </div>
+            </div>
           </div>
 
-          <div>
-            <label htmlFor="price" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Price (₱)
-            </label>
-            <input
-              type="number"
-              id="price"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              step="0.01"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-gray-100"
-            />
+          <div className="flex gap-4">
+            <Button type="submit" className="inline-flex items-center gap-2">
+              <Save className="w-5 h-5" />
+              Create Task
+            </Button>
+            <Button variant="ghost" type="button" onClick={() => router.back()}>Cancel</Button>
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label htmlFor="deadline" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Deadline *
-            </label>
-            <input
-              type="date"
-              id="deadline"
-              value={deadline}
-              onChange={(e) => setDeadline(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-gray-100"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="estimatedHours" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Estimated Hours
-            </label>
-            <input
-              type="number"
-              id="estimatedHours"
-              value={estimatedHours}
-              onChange={(e) => setEstimatedHours(e.target.value)}
-              step="0.5"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-gray-100"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Notes
-          </label>
-          <textarea
-            id="notes"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-gray-100"
-          />
-        </div>
-
-        <div className="flex space-x-4">
-          <button
-            type="submit"
-            className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors inline-flex items-center space-x-2"
-          >
-            <Save className="w-5 h-5" />
-            <span>Create Task</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

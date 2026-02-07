@@ -1,32 +1,45 @@
 'use client';
 
-import { Moon, Sun } from 'lucide-react';
+import { Sun, Moon, Monitor } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Theme, getStoredTheme, setStoredTheme, applyTheme } from '@/lib/theme';
 
 export default function ThemeToggle() {
-  const [isDark, setIsDark] = useState(false);
+  const [theme, setTheme] = useState<Theme>('system');
 
   useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = saved || (prefersDark ? 'dark' : 'light');
-    setIsDark(theme === 'dark');
-    document.documentElement.classList.toggle('dark', theme === 'dark');
+    const stored = getStoredTheme();
+    if (stored) setTheme(stored);
+    applyTheme(stored || 'system');
+
+    // respond to storage changes
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'theme') {
+        const s = getStoredTheme();
+        setTheme(s || 'system');
+        applyTheme(s || 'system');
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = isDark ? 'light' : 'dark';
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle('dark', !isDark);
-    localStorage.setItem('theme', newTheme);
+  const cycle = () => {
+    const next: Theme = theme === 'system' ? 'dark' : theme === 'dark' ? 'light' : 'system';
+    setTheme(next);
+    setStoredTheme(next);
+    applyTheme(next);
   };
+
+  const icon = theme === 'dark' ? <Sun className="w-5 h-5" /> : theme === 'light' ? <Moon className="w-5 h-5" /> : <Monitor className="w-5 h-5" />;
 
   return (
     <button
-      onClick={toggleTheme}
+      onClick={cycle}
+      title={`Theme: ${theme}`}
       className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
     >
-      {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+      {icon}
     </button>
   );
 }

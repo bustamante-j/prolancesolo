@@ -9,43 +9,47 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 py-24">
         <div className="absolute inset-0 bg-black/10"></div>
+        {/* floating decorative blobs */}
+        <div className="absolute -left-32 -top-20 w-96 h-96 bg-gradient-to-br from-indigo-400 to-purple-600 opacity-30 rounded-full filter blur-3xl animate-prolance-float" />
+        <div className="absolute -right-32 -bottom-24 w-80 h-80 bg-gradient-to-br from-yellow-400 to-orange-500 opacity-30 rounded-full filter blur-3xl animate-prolance-float animation-delay-2" />
+
         <div className="relative max-w-7xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm font-medium mb-8">
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm font-medium mb-8 hero-badge">
             <Zap className="w-4 h-4 mr-2" />
             Smart Freelance Management Platform
           </div>
-          <h1 className="text-6xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            ProLance
-            <span className="block text-4xl md:text-5xl font-medium text-indigo-200">Lite</span>
+          <h1 className="text-6xl md:text-7xl font-bold text-white mb-6 leading-tight hero-title">
+            <span className="block">ProLance</span>
+            <span className="block text-4xl md:text-5xl font-medium text-indigo-200 hero-sub">Lite</span>
           </h1>
-          <p className="text-xl md:text-2xl text-indigo-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-indigo-100 mb-8 max-w-3xl mx-auto leading-relaxed hero-desc">
             Transform your freelance career with AI-powered task management, intelligent income tracking, and productivity tools designed specifically for independent professionals.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 hero-ctas">
             <Link
               href="/register"
-              className="bg-white text-indigo-600 px-10 py-4 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              className="bg-white text-indigo-600 px-10 py-4 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl hero-cta"
             >
               Start Free Trial
             </Link>
             <Link
               href="#features"
-              className="border-2 border-white/30 text-white px-10 py-4 rounded-xl font-semibold hover:bg-white/10 transition-all duration-300 backdrop-blur-sm"
+              className="border-2 border-white/30 text-white px-10 py-4 rounded-xl font-semibold hover:bg-white/10 transition-all duration-300 backdrop-blur-sm hero-cta-outline"
             >
               Explore Features
             </Link>
           </div>
-          <div className="flex items-center justify-center space-x-8 text-indigo-200">
+          <div className="flex items-center justify-center space-x-8 text-indigo-200 hero-stats">
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">10K+</div>
+              <div className="text-2xl font-bold text-white hero-count" data-target="10000">10K+</div>
               <div className="text-sm">Active Freelancers</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">$2M+</div>
+              <div className="text-2xl font-bold text-white hero-count" data-target="2000000">$2M+</div>
               <div className="text-sm">Income Tracked</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">95%</div>
+              <div className="text-2xl font-bold text-white hero-count" data-target="95">95%</div>
               <div className="text-sm">Satisfaction Rate</div>
             </div>
           </div>
