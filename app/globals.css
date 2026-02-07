@@ -70,3 +70,68 @@ body {
 .status-dropdown .label {
   font-size: 0.9rem;
 }
+
+/* ProLance animation system (applies when html has .animations-enabled) */
+@keyframes prolance-float {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-12px) scale(1.03); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes hero-slide-up {
+  0% { opacity: 0; transform: translateY(12px) scale(0.995); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes feature-pop {
+  0% { opacity: 0; transform: translateY(8px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+html.animations-enabled .animate-prolance-float {
+  animation: prolance-float 8s ease-in-out infinite;
+}
+html.animations-enabled .animation-delay-2 {
+  animation-delay: 1.6s;
+}
+
+html.animations-enabled .hero-title { animation: hero-slide-up 800ms cubic-bezier(.2,.9,.3,1) both; }
+html.animations-enabled .hero-sub { animation: hero-slide-up 900ms cubic-bezier(.2,.9,.3,1) 120ms both; }
+html.animations-enabled .hero-desc { animation: hero-slide-up 1000ms cubic-bezier(.2,.9,.3,1) 220ms both; }
+html.animations-enabled .hero-ctas .hero-cta { animation: hero-slide-up 1100ms cubic-bezier(.2,.9,.3,1) 320ms both; }
+html.animations-enabled .hero-ctas .hero-cta-outline { animation: hero-slide-up 1100ms cubic-bezier(.2,.9,.3,1) 380ms both; }
+html.animations-enabled .hero-stats .hero-count { animation: hero-slide-up 1200ms cubic-bezier(.2,.9,.3,1) 420ms both; }
+html.animations-enabled .group { animation: feature-pop 900ms cubic-bezier(.2,.9,.3,1) both; }
+
+/* Compact mode: tighter spacing */
+html.compact-mode .rounded-xl { border-radius: 0.75rem; }
+html.compact-mode .p-6 { padding: 0.75rem; }
+html.compact-mode .px-6 { padding-left: 0.75rem; padding-right: 0.75rem; }
+html.compact-mode .py-6 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+html.compact-mode .gap-6 { gap: 0.5rem; }
+html.compact-mode .space-y-6 > * + * { margin-top: 0.5rem; }
+
+/* Brand accents */
+.text-brand { color: var(--brand-navy, #0b2340); }
+.bg-brand { background: var(--brand-navy, #0b2340); color: white; }
+
+/* Enhanced visual language */
+html.enhanced-ui .rounded-xl { box-shadow: 0 10px 30px rgba(11, 35, 64, 0.08); transition: box-shadow 300ms ease, transform 300ms ease; }
+html.enhanced-ui .group:hover .rounded-xl { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(11,35,64,0.12); }
+html.enhanced-ui .hero-cta { box-shadow: 0 12px 30px rgba(12,34,64,0.18); transform: translateY(0); }
+html.enhanced-ui .hero-badge { background: linear-gradient(90deg, rgba(11,35,64,0.15), rgba(243,156,18,0.12)); }
+
+
+/* Reduced motion: turn animations off when user prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html.animations-enabled .animate-prolance-float,
+  html.animations-enabled .hero-title,
+  html.animations-enabled .hero-sub,
+  html.animations-enabled .hero-desc,
+  html.animations-enabled .hero-ctas .hero-cta,
+  html.animations-enabled .group,
+  html.animations-enabled .hero-stats .hero-count {
+    animation: none !important;
+    transition: none !important;
+  }
+}

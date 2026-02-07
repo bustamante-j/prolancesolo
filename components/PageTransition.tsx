@@ -20,6 +20,8 @@ export default function PageTransition({ children }: PageTransitionProps) {
   useEffect(() => {
     const prevPathname = prevPathnameRef.current;
 
+    const animationsEnabled = typeof document !== 'undefined' && document.documentElement.classList.contains('animations-enabled');
+
     // Simple direction detection - you could enhance this with a navigation history stack
     if (pathname !== prevPathname) {
       setIsTransitioning(true);
@@ -31,9 +33,10 @@ export default function PageTransition({ children }: PageTransitionProps) {
       // Update children immediately for the new page
       setDisplayChildren(children);
 
+      const timeout = animationsEnabled ? 350 : 0;
       const timer = setTimeout(() => {
         setIsTransitioning(false);
-      }, 300); // 300ms for smooth slide animation
+      }, timeout);
 
       prevPathnameRef.current = pathname;
       return () => clearTimeout(timer);

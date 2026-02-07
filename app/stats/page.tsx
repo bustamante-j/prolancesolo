@@ -8,6 +8,8 @@ import { formatCurrency } from '@/lib/calculations';
 import { Task } from '@/types/task';
 import Charts from '@/components/Charts';
 import ExportButton from '@/components/ExportButton';
+import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 
 export default function StatsPage() {
@@ -74,45 +76,46 @@ export default function StatsPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-0 py-3">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Statistics</h1>
-        <ExportButton tasks={tasks} />
-      </div>
+    <div className="min-h-screen w-full bg-white dark:bg-gray-950 px-6 md:px-8 py-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-6 mb-8">
+          <ExportButton tasks={tasks} />
+        </div>
 
-      {/* Income Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Expected Income</h3>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{formatCurrency(expectedIncome)}</p>
+        {/* Income Overview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <Card className="bg-gradient-to-br from-blue-50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-900/10">
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Expected Income</h3>
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">{formatCurrency(expectedIncome)}</p>
+          </Card>
+          <Card className="bg-gradient-to-br from-green-50 to-green-50/50 dark:from-green-900/20 dark:to-green-900/10">
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Paid</h3>
+            <p className="text-3xl font-bold text-green-600 dark:text-green-400">{formatCurrency(paidIncome)}</p>
+          </Card>
+          <Card className="bg-gradient-to-br from-red-50 to-red-50/50 dark:from-red-900/20 dark:to-red-900/10">
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Unpaid</h3>
+            <p className="text-3xl font-bold text-red-600 dark:text-red-400">{formatCurrency(unpaidIncome)}</p>
+          </Card>
+          <Card className="bg-gradient-to-br from-indigo-50 to-indigo-50/50 dark:from-indigo-900/20 dark:to-indigo-900/10">
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Today</h3>
+            <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{formatCurrency(todayIncome)}</p>
+          </Card>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Paid</h3>
-          <p className="text-2xl font-bold text-green-600 dark:text-green-400">{formatCurrency(paidIncome)}</p>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Unpaid</h3>
-          <p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(unpaidIncome)}</p>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Today</h3>
-          <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{formatCurrency(todayIncome)}</p>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Weekly Income</h3>
-          <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{formatCurrency(weeklyIncome)}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Card className="p-8">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Weekly Income</h3>
+            <p className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">{formatCurrency(weeklyIncome)}</p>
+          </Card>
+          <Card className="p-8">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Monthly Income</h3>
+            <p className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">{formatCurrency(monthlyIncome)}</p>
+          </Card>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Monthly Income</h3>
-          <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{formatCurrency(monthlyIncome)}</p>
-        </div>
-      </div>
 
-      {/* Charts */}
-      <Charts data={chartData} />
+        {/* Charts */}
+        <Charts data={chartData} />
+      </div>
     </div>
   );
 }

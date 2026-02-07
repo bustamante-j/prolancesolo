@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { auth } from '@/lib/auth';
-import ThemeToggle from './ThemeToggle';
+import SettingsMenu from './Settings/SettingsMenu';
 import { LogOut, Plus, Users, BarChart3, CheckSquare, History } from 'lucide-react';
 
 export default function Navbar() {
@@ -42,7 +42,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
             <img
-              src="/prolance-logo.png"
+              src={encodeURI('/ChatGPT Image Jan 31, 2026, 06_25_36 PM.png')}
               alt="ProLance Lite logo"
               width={40}
               height={40}
@@ -52,7 +52,7 @@ export default function Navbar() {
             <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">ProLance Lite</span>
           </Link>
           <div className="flex items-center gap-4">
-            <ThemeToggle />
+            <SettingsMenu />
             <Link
               href="/login"
               className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
@@ -79,7 +79,7 @@ export default function Navbar() {
           <div className="flex items-center gap-8">
             <Link href="/tasks" className="flex items-center gap-3">
               <img
-                src="/prolance-logo.png"
+                src={encodeURI('/ChatGPT Image Jan 31, 2026, 06_25_36 PM.png')}
                 alt="ProLance Lite logo"
                 width={40}
                 height={40}
@@ -158,7 +158,7 @@ export default function Navbar() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <ThemeToggle />
+            <SettingsMenu />
             <button
               onClick={handleLogout}
               className="flex items-center space-x-1 px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"

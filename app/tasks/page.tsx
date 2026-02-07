@@ -22,6 +22,8 @@ import { useFocusMode } from '@/hooks/useFocusMode';
 import { Plus, AlertTriangle, Calendar, ToggleLeft, ToggleRight, Focus, EyeOff, Play, Pause, RotateCcw, CheckSquare, Square } from 'lucide-react';
 import Timer from '@/components/Timer';
 import CalendarComponent from '@/components/Calendar';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
 
 export default function TasksPage() {
   // State for client data
@@ -268,61 +270,46 @@ export default function TasksPage() {
 
   return (
     // Main page container with full height and centered content
-    <div className="min-h-screen w-full px-30 py-3 flex flex-col">
+    <div className="min-h-screen w-full px-6 md:px-8 py-6 bg-white dark:bg-gray-950 flex flex-col">
       {/* Page header with title and control buttons */}
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center space-x-4">
-          {/* Page title */}
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Tasks</h1>
+      <div>
 
-          {/* Today Only Toggle Button */}
-          <button
-            onClick={toggleTodayFilter}
-            className={`inline-flex items-center px-3 py-2 rounded-xl font-medium transition-colors ${
-              showTodayOnly
-                ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-            }`}
-          >
-            {showTodayOnly ? (
-              <ToggleRight className="w-4 h-4 mr-2" />
-            ) : (
-              <ToggleLeft className="w-4 h-4 mr-2" />
-            )}
+        {/* Control buttons - Today Only, Hidden Tasks, Focus Mode Exit */}
+        <div className="flex flex-wrap gap-2 mt-6 mb-8">
+          <Button variant="ghost" onClick={toggleTodayFilter} className="flex items-center gap-2 h-10">
+            {showTodayOnly ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
             Today Only
-          </button>
+          </Button>
 
-          {/* Hidden Tasks Toggle */}
           <div className="relative">
-            <button
-              onClick={() => setShowHiddenTasks(!showHiddenTasks)}
-              className={`inline-flex items-center px-3 py-2 rounded-xl font-medium transition-colors ${
-                showHiddenTasks
-                  ? 'bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
+            <Button variant="ghost" onClick={() => setShowHiddenTasks(!showHiddenTasks)} className="flex items-center gap-2 h-10">
+              <EyeOff className="w-4 h-4" />
+              Hidden ({hiddenTasks.length})
+            </Button>
+
+            {/* Icon-only New Task button placed next to Hidden; match height to Hidden button */}
+            <Button
+              variant="ghost"
+              onClick={() => router.push('/add')}
+              title="New Task"
+              aria-label="New Task"
+              className="ml-2 flex items-center gap-2 h-10"
             >
-              <EyeOff className="w-4 h-4 mr-2" />
-              Hidden Tasks
-            </button>
+              <Plus className="w-4 h-4" />
+            </Button>
 
             {/* Hidden Tasks Dropdown */}
             {showHiddenTasks && hiddenTasks.length > 0 && (
-              <div className="absolute top-full mt-2 left-0 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-lg z-10 min-w-80">
-                <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Hidden Tasks</h4>
-                <div className="space-y-2 max-h-60 overflow-y-auto">
+              <div className="absolute top-full mt-2 left-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-lg z-10 min-w-96 p-4">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Restore Hidden Tasks</h4>
+                <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
                   {hiddenTasks.map((task) => (
-                    <div key={task.id} className="flex items-center justify-between p-2 bg-white dark:bg-gray-700 rounded-lg border">
+                    <div key={task.id} className="flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700">
                       <div className="flex-1 min-w-0">
-                        <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{task.title}</h5>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{task.clientId} • {task.estimatedHours}h</p>
+                        <h5 className="text-sm font-medium text-gray-900 dark:text-white truncate">{task.title}</h5>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{task.estimatedHours}h estimate</p>
                       </div>
-                      <button
-                        onClick={() => handleTaskRestore(task.id)}
-                        className="ml-2 px-2 py-1 text-xs bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors"
-                      >
-                        Restore
-                      </button>
+                      <Button variant="primary" onClick={() => handleTaskRestore(task.id)} className="ml-2 px-3 py-1 text-xs">Restore</Button>
                     </div>
                   ))}
                 </div>
@@ -330,27 +317,12 @@ export default function TasksPage() {
             )}
           </div>
 
-          {/* Focus Mode Toggle Button - only shown when in focus mode */}
           {isFocusMode && (
-            <button
-              onClick={exitFocusMode}
-              className="inline-flex items-center px-3 py-2 rounded-xl font-medium bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
-            >
-              <Focus className="w-4 h-4 mr-2" />
+            <Button variant="ghost" onClick={exitFocusMode} className="text-red-600 dark:text-red-400 border-red-300 dark:border-red-700 hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2">
+              <Focus className="w-4 h-4" />
               Exit Focus
-            </button>
+            </Button>
           )}
-        </div>
-
-        {/* Add Task Button - links to task creation page */}
-        <div className="ml-auto">
-          <Link
-            href="/add"
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors inline-flex items-center space-x-2"
-          >
-            <Plus className="w-5 h-5" />
-            <span>Add Task</span>
-          </Link>
         </div>
       </div>
 
@@ -549,25 +521,26 @@ export default function TasksPage() {
 
           {/* Undo snackbar for status changes */}
           {undoVisible && (
-            <div className="fixed left-6 bottom-6 bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg z-50 inline-flex items-center space-x-4">
-              <span>Status updated</span>
-              <button onClick={undoStatus} className="underline text-indigo-300">Undo</button>
+            <div className="fixed left-6 bottom-6 bg-gray-900 dark:bg-gray-950 text-white px-6 py-4 rounded-xl shadow-xl z-50 inline-flex items-center gap-4 border border-gray-700 dark:border-gray-800">
+              <span className="font-medium">Status updated</span>
+              <button onClick={undoStatus} className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 font-semibold underline">Undo</button>
             </div>
           )}
           {/* Overwork Warning Banner - appears when daily hours exceed 8 */}
           {dailyHours > 8 && (
-            <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-6">
-              <div className="flex items-center space-x-2">
-                <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
-                <span className="text-red-800 dark:text-red-200 font-medium">
-                  Overwork Warning: You've worked {dailyHours.toFixed(1)} hours today. Take a break!
-                </span>
+            <Card className="mb-6 border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20">
+              <div className="flex items-center gap-3 p-4">
+                <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-red-900 dark:text-red-300">You've worked {dailyHours.toFixed(1)} hours today</p>
+                  <p className="text-sm text-red-800 dark:text-red-400">Take a break to recharge!</p>
+                </div>
               </div>
-            </div>
+            </Card>
           )}
 
           {/* Main content grid - 70/30 split on large screens */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
             {/* Left column - tasks list (8/12 width on large screens, 8/12 on medium) */}
             <div className="lg:col-span-8 md:col-span-8 pr-6 lg:pr-8">
           {filteredTasks.length > 0 ? (
@@ -580,8 +553,8 @@ export default function TasksPage() {
                 items={filteredTasks.map(task => task.id)}
                 strategy={verticalListSortingStrategy}
               >
-                {/* Task cards grid - responsive layout */}
-                <div className={`grid grid-cols-1 ${isFocusMode ? 'md:grid-cols-1 max-w-2xl mx-auto' : 'md:grid-cols-2'} gap-6`}>
+                {/* Task cards - responsive layout */}
+                <div className="grid grid-cols-1 gap-4">
                   {filteredTasks.map((task) => (
                     <DraggableTaskCard
                       key={task.id}
@@ -601,63 +574,52 @@ export default function TasksPage() {
             </DndContext>
           ) : (
             // Empty state when no tasks match current filters
-            <div className="col-span-full text-center py-12">
+            <div className="col-span-full text-center py-16">
               {showTodayOnly ? (
                 // No tasks due today message
                 <div className="space-y-4">
-                  <Calendar className="w-16 h-16 text-gray-400 mx-auto" />
+                  <Calendar className="w-12 h-12 text-gray-400 mx-auto" />
                   <div>
-                    <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">No tasks due today 🎉</p>
-                    <p className="text-gray-400 dark:text-gray-500 text-sm">
-                      Great job staying on top of your work!
+                    <p className="text-gray-900 dark:text-gray-100 text-lg font-medium mb-2">No tasks due today</p>
+                    <p className="text-gray-500 dark:text-gray-400 mb-4">
+                      Great job staying on top of your work! 🎉
                     </p>
+                    <Button variant="ghost" onClick={toggleTodayFilter}>View all tasks</Button>
                   </div>
-                  <button
-                    onClick={toggleTodayFilter}
-                    className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium"
-                  >
-                    View all tasks →
-                  </button>
                 </div>
               ) : isFocusMode ? (
                 // Focus mode empty state
                 <div className="space-y-4">
-                  <Focus className="w-16 h-16 text-gray-400 mx-auto" />
+                  <Focus className="w-12 h-12 text-gray-400 mx-auto" />
                   <div>
-                    <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">Focus mode active</p>
-                    <p className="text-gray-400 dark:text-gray-500 text-sm">
+                    <p className="text-gray-900 dark:text-gray-100 text-lg font-medium mb-2">Focus mode active</p>
+                    <p className="text-gray-500 dark:text-gray-400 mb-4">
                       Click a task to focus on it
                     </p>
+                    <Button variant="ghost" onClick={exitFocusMode}>Exit focus mode</Button>
                   </div>
-                  <button
-                    onClick={exitFocusMode}
-                    className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium"
-                  >
-                    Exit focus mode →
-                  </button>
                 </div>
               ) : (
                 // General empty state when no tasks exist
                 <div className="space-y-4">
-                  <p className="text-gray-500 dark:text-gray-400 mb-4">No tasks yet</p>
-                  <Link
-                    href="/add"
-                    className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium"
-                  >
-                    Create your first task →
-                  </Link>
+                  <p className="text-gray-500 dark:text-gray-400 mb-4">No tasks yet — create one to get started!</p>
+                  <Button onClick={() => router.push('/add')}>Create first task</Button>
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {/* Right column - calendar and planner (4/12 width on large screens, 4/12 on medium) */}
-        <div className="space-y-6 lg:col-span-4 md:col-span-4 lg:border-l lg:border-gray-200 lg:dark:border-gray-700 lg:pl-8">
-          {/* Calendar component showing current month with task deadlines */}
-          <CalendarComponent tasks={tasks} />
-          {/* Compact planner showing today's prioritized tasks */}
-          <Planner tasks={filteredTasks} clients={clients} />
+        {/* Right column - Calendar above Planner on large screens */}
+        <div className="lg:col-span-4 space-y-6 lg:border-l lg:border-gray-200 lg:dark:border-gray-800 lg:pl-6">
+          <div className="hidden lg:block">
+            <div className="mb-4">
+              <CalendarComponent tasks={tasks} />
+            </div>
+            <div>
+              <Planner tasks={filteredTasks} clients={clients} />
+            </div>
+          </div>
         </div>
       </div>
         </>
